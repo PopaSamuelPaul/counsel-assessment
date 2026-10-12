@@ -10,6 +10,12 @@
   --muted: #858995;
   --border: #e9ebef;
   --green: #447967;
+  --surface: #ffffff;
+  --surface-2: #f7f8fa;
+  --surface-3: #f1f2f5;
+  --line: #e7e9ee;
+  --text-strong: #292d37;
+  --text-muted: #62656d;
 }
 * {
   box-sizing: border-box;
@@ -2608,4 +2614,237 @@ tbody tr:hover {
     flex-wrap: wrap;
     gap: 7px;
   }
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  background: #0f1218;
+  color: #e6e9ef;
+  --surface: #171b22;
+  --surface-2: #12161d;
+  --surface-3: #20252f;
+  --border: #2a3140;
+  --line: #2a3140;
+  --text-strong: #e6e9ef;
+  --text-muted: #9aa3b2;
+  --accent: #a396d8;
+}
+[data-theme='dark'] .topbar,
+[data-theme='dark'] .stat-card,
+[data-theme='dark'] .weekly-card,
+[data-theme='dark'] .entries-panel,
+[data-theme='dark'] .client-card,
+[data-theme='dark'] .review-summary > div,
+[data-theme='dark'] .toast,
+[data-theme='dark'] .modal {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-strong);
+}
+[data-theme='dark'] .segmented,
+[data-theme='dark'] .day-heading,
+[data-theme='dark'] .bulk-toolbar,
+[data-theme='dark'] .count,
+[data-theme='dark'] .review-progress,
+[data-theme='dark'] .help-note,
+[data-theme='dark'] .report-meter,
+[data-theme='dark'] .empty-icon,
+[data-theme='dark'] .tiny-avatar,
+[data-theme='dark'] .status-tag,
+[data-theme='dark'] .billable-control,
+[data-theme='dark'] .client-monogram {
+  background: var(--surface-3);
+  border-color: var(--border);
+}
+[data-theme='dark'] .segmented .selected {
+  background: #2b3240;
+  color: var(--text-strong);
+}
+[data-theme='dark'] .filters select,
+[data-theme='dark'] .bulk-toolbar select,
+[data-theme='dark'] .field input,
+[data-theme='dark'] .field select,
+[data-theme='dark'] .field textarea,
+[data-theme='dark'] .duration-field input,
+[data-theme='dark'] .review-date input,
+[data-theme='dark'] .search-field {
+  background: #10141a;
+  border-color: var(--border);
+  color: var(--text-strong);
+}
+[data-theme='dark'] .field input::placeholder,
+[data-theme='dark'] .field textarea::placeholder,
+[data-theme='dark'] .search-field input::placeholder {
+  color: #7c8494;
+}
+[data-theme='dark'] .secondary {
+  background: #20252f;
+  border-color: #333c4d;
+  color: #c7ccd6;
+}
+[data-theme='dark'] .secondary:hover:not(:disabled),
+[data-theme='dark'] .icon-button:hover,
+[data-theme='dark'] .backup-option:hover {
+  background: #2b3240;
+  color: #c3b0ee;
+}
+[data-theme='dark'] .restore-confirm,
+[data-theme='dark'] .storage-error {
+  background: #241d14;
+  border-color: #4a3c28;
+}
+[data-theme='dark'] td {
+  border-bottom-color: #232a35;
+}
+[data-theme='dark'] tbody tr:hover {
+  background: #1b2029;
+}
+[data-theme='dark'] .modal::backdrop {
+  background: #05070bd9;
+}
+[data-theme='dark'] .empty-icon > span {
+  background: #2b3240;
+}
+[data-theme='dark'] .load-sample,
+[data-theme='dark'] .empty-icon > span {
+  color: #c3b0ee;
+}
+[data-theme='dark'] .day-heading span {
+  background: #2b2438;
+  color: #c3b0ee;
+}
+[data-theme='dark'] h1,
+[data-theme='dark'] h2,
+[data-theme='dark'] h3,
+[data-theme='dark'] strong,
+[data-theme='dark'] .stat-value,
+[data-theme='dark'] .duration-cell strong,
+[data-theme='dark'] .review-progress h2 {
+  color: var(--text-strong);
+}
+[data-theme='dark'] .breadcrumb,
+[data-theme='dark'] .topbar svg,
+[data-theme='dark'] .save-status,
+[data-theme='dark'] .eyebrow,
+[data-theme='dark'] .page-heading p,
+[data-theme='dark'] .segmented button,
+[data-theme='dark'] .week-selector > span,
+[data-theme='dark'] .week-selector > span svg,
+[data-theme='dark'] .stat-label,
+[data-theme='dark'] .stat-label > span,
+[data-theme='dark'] .stat-detail,
+[data-theme='dark'] .section-eyebrow,
+[data-theme='dark'] .chart-legend,
+[data-theme='dark'] .day-name,
+[data-theme='dark'] .day-name > b,
+[data-theme='dark'] .panel-title p,
+[data-theme='dark'] .entry-client div > span,
+[data-theme='dark'] .member-cell,
+[data-theme='dark'] .table-footer,
+[data-theme='dark'] .empty-state p,
+[data-theme='dark'] .clients-summary,
+[data-theme='dark'] .clients-summary > span,
+[data-theme='dark'] .client-card > p,
+[data-theme='dark'] .client-stats span,
+[data-theme='dark'] .report-client div > span,
+[data-theme='dark'] .report-hours span,
+[data-theme='dark'] .modal-heading p,
+[data-theme='dark'] .modal-copy,
+[data-theme='dark'] .optional,
+[data-theme='dark'] .duration-field span,
+[data-theme='dark'] .billable-control div > span,
+[data-theme='dark'] .help-content > p,
+[data-theme='dark'] .backup-summary,
+[data-theme='dark'] .backup-summary span,
+[data-theme='dark'] .backup-option span,
+[data-theme='dark'] .privacy-note,
+[data-theme='dark'] .review-progress p,
+[data-theme='dark'] .review-progress-count,
+[data-theme='dark'] .review-summary span,
+[data-theme='dark'] .selection-count,
+[data-theme='dark'] .select-visible,
+[data-theme='dark'] .status-tag,
+[data-theme='dark'] .review-entry-meta strong,
+[data-theme='dark'] .review-entry div > span {
+  color: var(--text-muted);
+}
+[data-theme='dark'] .tiny-avatar {
+  color: #cbbfae;
+}
+[data-theme='dark'] .status-tag i {
+  background: #6a7280;
+}
+[data-theme='dark'] .status-tag.billable {
+  color: #8fd3b6;
+  background: #1a2a22;
+}
+[data-theme='dark'] .status-tag.billable i {
+  background: #6fae90;
+}
+[data-theme='dark'] .stat-card.green {
+  background: #14211b;
+  border-color: #23392f;
+}
+[data-theme='dark'] .stat-card.green .stat-label > span,
+[data-theme='dark'] .stat-card.green .stat-value {
+  color: #7fc0a1;
+}
+[data-theme='dark'] .form-error {
+  background: #2a1a1c;
+  color: #f0a1a6;
+  border-color: #4a2a2e;
+}
+[data-theme='dark'] .save-status.warning {
+  color: #e0a86a;
+}
+[data-theme='dark'] .review-state {
+  background: #241f31;
+  color: #c3b0ee;
+  border-color: #3a3350;
+}
+[data-theme='dark'] .review-state.is-reviewed {
+  background: #17261f;
+  color: #8fd3b6;
+  border-color: #26402f;
+}
+[data-theme='dark'] .review-notice {
+  color: #8fd3b6;
+}
+[data-theme='dark'] th,
+[data-theme='dark'] .day-heading,
+[data-theme='dark'] .page-footer,
+[data-theme='dark'] .page-footer span,
+[data-theme='dark'] .mini-brand,
+[data-theme='dark'] .subtle-label,
+[data-theme='dark'] .weekly-intro p,
+[data-theme='dark'] .bar-total,
+[data-theme='dark'] .chart-day {
+  color: var(--text-muted);
+}
+[data-theme='dark'] .today .day-name {
+  color: #c3b0ee;
+}
+[data-theme='dark'] .today .day-name > b {
+  background: #2b2438;
+  color: #d0c5f5;
+}
+[data-theme='dark'] .review-date,
+[data-theme='dark'] .review-entry p,
+[data-theme='dark'] .review-employee {
+  color: var(--text-muted);
+}
+[data-theme='dark'] .backup-summary,
+[data-theme='dark'] .backup-option {
+  background: #1b2029;
+  color: var(--text-muted);
+}
+[data-theme='dark'] .backup-option:hover {
+  background: #232a35;
+}
+[data-theme='dark'] .backup-option strong,
+[data-theme='dark'] .backup-summary strong {
+  color: var(--text-strong);
+}
+[data-theme='dark'] .restore-confirm p {
+  color: #cbbfae;
 }

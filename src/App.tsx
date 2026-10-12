@@ -13,10 +13,12 @@ import {
   Database,
   FileText,
   HelpCircle,
+  Moon,
   MoreHorizontal,
   Plus,
   Search,
   ShieldCheck,
+  Sun,
   Upload,
   X,
 } from 'lucide-react';
@@ -43,13 +45,16 @@ import type { Page } from './components/Sidebar';
 import { ClientForm } from './components/ClientForm';
 import { Stat } from './components/Stat';
 import { ReviewPage } from './components/ReviewPage';
-import { mostRecentEntry, saveEntry } from './review';
+import { saveEntry, mostRecentEntry } from './review';
 import pilotWorkspace from './fixtures/pilot-workspace.json';
 import { EntryTable } from './components/EntryTable';
+import { applyTheme, persistTheme, resolveTheme } from './theme';
+import type { Theme } from './theme';
 type Toast = { text: string; undo?: () => void };
 export default function App() {
   const { data, save, error: storageError } = useStore();
   const [page, setPage] = useState<Page>('entries');
+  const [theme, setTheme] = useState<Theme>(() => resolveTheme());
   const [week, setWeek] = useState(weekStart(localDate()));
   const [range, setRange] = useState('week');
   const [search, setSearch] = useState('');
@@ -66,6 +71,9 @@ export default function App() {
   const [pendingRestore, setPendingRestore] = useState<Data | null>(null);
   const [utilityError, setUtilityError] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), toast.undo ? 12000 : 5000);
@@ -99,6 +107,11 @@ export default function App() {
     }
     setRepeatSource(repeatable);
     setEntryModal('new');
+  }
+  function toggleTheme() {
+    const next: Theme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    persistTheme(next);
   }
   function exportCsv() {
     download(
@@ -154,6 +167,18 @@ export default function App() {
             </span>
           </div>
           <div className="topbar-tools">
+            <button
+              className="icon-button"
+              aria-label={
+                theme === 'dark'
+                  ? 'Switch to light theme'
+                  : 'Switch to dark theme'
+              }
+              title="Toggle theme"
+              onClick={toggleTheme}
+            >
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
             <button
               className="icon-button"
               aria-label="Manage data"
