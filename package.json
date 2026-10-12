@@ -10,6 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:chromium": "playwright test --project=desktop-chromium --project=mobile-chromium",
+    "setup:browsers": "node scripts/setup-browsers.mjs",
     "check": "npm test && npm run build",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

@@ -22,20 +22,21 @@ Correctness fixes:
 ## Verified
 
 - `npm test`: 49 pass (`src/review.test.ts`, `src/components/ReviewPage.test.tsx`, `src/theme.test.ts`).
-- `npm run test:e2e`: 28 pass on desktop + mobile Chromium, including reproductions of all three reports, selection/undo clearing, undo conflict, repeat-last-entry prefill, the needs-review shortcut, and dark mode. Axe runs in light and dark across all pages and dialogs; a computed-style audit found no un-themed surfaces.
+- `npm run test:e2e`: 70 pass across five projects — Chromium (desktop + mobile), Firefox (desktop) and WebKit (desktop + mobile Safari) — including reproductions of all three reports, selection/undo clearing, undo conflict, repeat-last-entry prefill, the needs-review shortcut, and dark mode. Axe runs on every engine in light and dark; a computed-style audit found no un-themed surfaces.
 - `npm run build` + Prettier: pass.
 - Independently reproduced from a fresh clone of the submitted commit (`npm ci`, `npm run check`, `npm run test:e2e`).
+- GitHub Actions (`.github/workflows/ci.yml`) runs `npm run check` and the full cross-browser suite on Ubuntu.
 
 ## Remaining
 
-Chromium-only browser coverage; no real Safari/native mobile run. The dark theme covers app surfaces, text and controls, but I did not hand-tune every chart shade.
+No real device/native run (browser engines are emulated, not physical hardware). On Linux distributions other than Ubuntu/Debian, WebKit needs `npm run setup:browsers` to stage two libraries Playwright does not bundle; the unit and Chromium suites are unaffected.
 
 ## Release recommendation
 
-Yes for the pilot: these fixes remove the trust-eroding number and action-scope bugs. Residual risk is single-browser coverage and no manual cross-team walkthrough.
+Yes for the pilot: these fixes remove the trust-eroding number and action-scope bugs. Residual risk is emulated (not physical) devices and no manual cross-team walkthrough.
 
 ## AI use
 
-An AI agent helped trace causes and draft tests. One check: its first undo test compared full datasets and failed; I corrected the `UndoRecord` semantics to affected-entry-only and re-ran. I also rejected its "preserve selection" proposal for the simpler clear-and-explain after re-reading the scope expectation. Its repeat-last-entry change introduced a mobile toolbar overflow that the e2e suite caught; I reproduced it, fixed the wrapping, and re-ran green.
+An AI agent helped trace causes and draft tests. One check: its first undo test compared full datasets and failed; I corrected the `UndoRecord` semantics to affected-entry-only and re-ran. I also rejected its "preserve selection" proposal for the simpler clear-and-explain after re-reading the scope expectation. Its repeat-last-entry change introduced a mobile toolbar overflow that the e2e suite caught; I reproduced it, fixed the wrapping, and re-ran green. For cross-browser coverage I verified each engine actually launched before trusting the matrix, and kept the Ubuntu-only library workaround behind a script rather than claiming coverage I had not run.
 
 Final commit SHA: supplied to the interviewer after the final push.
