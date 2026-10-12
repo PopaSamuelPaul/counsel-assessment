@@ -31,12 +31,13 @@ The fixture also contains the previous week. Its dates are fixed so everyone inv
 npm test                 # Unit tests
 npm run build            # TypeScript check and production build
 npm run check            # Unit tests and build
-npx playwright install chromium
-npm run test:e2e          # Desktop and mobile Chromium flows, including axe checks
+npm run setup:browsers   # Install Chromium, Firefox and WebKit (no root needed)
+npm run test:e2e          # Chromium, Firefox and WebKit (desktop + mobile Safari), with axe checks
+npm run test:e2e:chromium # Fast Chromium-only loop
 npm run preview          # Serve the production build locally
 ```
 
-Browser tests start their own server on port 5177; leave that port free. The mobile project emulates a phone in Chromium; it is not a test of native Safari. CI installs the browser automatically. Existing checks cover established workflows; passing them is not a guarantee that the reported customer issues are resolved.
+Browser tests start their own server on port 5177; leave that port free. Desktop runs Chromium, Firefox and WebKit; the mobile projects run Chromium and WebKit (mobile Safari engine). These engines are emulated, not physical devices. On Linux distributions other than Debian/Ubuntu, `npm run setup:browsers` installs the browsers and stages the two libraries WebKit needs; CI installs them automatically. Existing checks cover established workflows; passing them is not a guarantee that the reported customer issues are resolved.
 
 ## Product structure
 
