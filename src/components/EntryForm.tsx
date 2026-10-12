@@ -5,36 +5,47 @@ import type { Client, Entry } from '../model';
 import { Modal } from './Modal';
 export function EntryForm({
   entry,
+  template,
   clients,
   onSave,
   onClose,
 }: {
   entry?: Entry;
+  template?: Entry;
   clients: Client[];
   onSave: (entry: Entry, client?: Client) => void;
   onClose: () => void;
 }) {
+  const source = entry ?? template;
   const [date, setDate] = useState(entry?.date ?? localDate());
   const [hours, setHours] = useState(
-    entry ? String(Math.floor(entry.minutes / 60)) : '',
+    source ? String(Math.floor(source.minutes / 60)) : '',
   );
   const [minutes, setMinutes] = useState(
-    entry ? String(entry.minutes % 60) : '',
+    source ? String(source.minutes % 60) : '',
   );
   const [clientId, setClientId] = useState(
-    entry?.clientId ?? clients[0]?.id ?? '__new',
+    source?.clientId ?? clients[0]?.id ?? '__new',
   );
   const [clientName, setClientName] = useState('');
-  const [description, setDescription] = useState(entry?.description ?? '');
-  const [billable, setBillable] = useState(entry?.billable ?? true);
+  const [description, setDescription] = useState(source?.description ?? '');
+  const [billable, setBillable] = useState(source?.billable ?? true);
   const [error, setError] = useState('');
   return (
     <Modal
-      title={entry ? 'Edit time entry' : 'Make your time count.'}
+      title={
+        entry
+          ? 'Edit time entry'
+          : template
+            ? 'Repeat last entry'
+            : 'Make your time count.'
+      }
       subtitle={
         entry
           ? 'Keep your record accurate and up to date.'
-          : 'Capture the work. We’ll take care of the totals.'
+          : template
+            ? 'Check the details before saving.'
+            : 'Capture the work. We’ll take care of the totals.'
       }
       onClose={onClose}
     >

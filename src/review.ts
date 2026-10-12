@@ -1,5 +1,5 @@
 import type { Client, Data, Entry } from './model';
-import { addDays, validateEntry } from './model';
+import { addDays, EMPLOYEE, validateEntry } from './model';
 
 export type ReviewFilters = {
   week: string;
@@ -17,6 +17,15 @@ export function selectWeek(entries: Entry[], week: string) {
   return entries.filter(
     (entry) => entry.date >= week && entry.date <= addDays(week, 6),
   );
+}
+export function mostRecentEntry(
+  entries: Entry[],
+  employee = EMPLOYEE,
+): Entry | undefined {
+  return entries
+    .filter((entry) => entry.employee === employee)
+    .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id))
+    .at(0);
 }
 export function selectReview(
   entries: Entry[],

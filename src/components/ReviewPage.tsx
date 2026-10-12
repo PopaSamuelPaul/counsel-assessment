@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
+  ListFilter,
   Pencil,
   Search,
   Undo2,
@@ -220,6 +221,20 @@ export function ReviewPage({
             <option value="pending">Needs review</option>
             <option value="reviewed">Reviewed</option>
           </select>
+          <button
+            type="button"
+            className={`button small ${status === 'pending' ? 'primary' : 'secondary'}`}
+            aria-pressed={status === 'pending'}
+            disabled={!visible.length && status !== 'pending'}
+            onClick={() =>
+              changeView(() =>
+                setStatus(status === 'pending' ? 'all' : 'pending'),
+              )
+            }
+          >
+            <ListFilter size={15} />
+            {status === 'pending' ? 'Showing needs review' : 'Needs review'}
+          </button>
         </div>
         <div className="bulk-toolbar">
           <label className="select-visible">

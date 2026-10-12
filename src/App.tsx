@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock3,
+  Copy,
   Database,
   FileText,
   HelpCircle,
@@ -42,7 +43,7 @@ import type { Page } from './components/Sidebar';
 import { ClientForm } from './components/ClientForm';
 import { Stat } from './components/Stat';
 import { ReviewPage } from './components/ReviewPage';
-import { saveEntry } from './review';
+import { mostRecentEntry, saveEntry } from './review';
 import pilotWorkspace from './fixtures/pilot-workspace.json';
 import { EntryTable } from './components/EntryTable';
 type Toast = { text: string; undo?: () => void };
@@ -55,6 +56,7 @@ export default function App() {
   const [clientFilter, setClientFilter] = useState('all');
   const [billing, setBilling] = useState('all');
   const [entryModal, setEntryModal] = useState<Entry | 'new' | null>(null);
+  const [repeatSource, setRepeatSource] = useState<Entry | null>(null);
   const [clientModal, setClientModal] = useState<Client | 'new' | null>(null);
   const [utilityModal, setUtilityModal] = useState<'help' | 'backup' | null>(
     null,
@@ -89,6 +91,15 @@ export default function App() {
   const maxDay = Math.max(480, ...dayTotals.map((d) => d.total));
   const activeClients = new Set(filtered.map((e) => e.clientId)).size;
   const weekLabel = `${shortDate(week)} – ${shortDate(end, { day: 'numeric', month: 'short', year: 'numeric' })}`;
+  const repeatable = mostRecentEntry(data.entries);
+  function repeatLast() {
+    if (!repeatable) {
+      setToast({ text: 'There is no earlier entry to repeat yet.' });
+      return;
+    }
+    setRepeatSource(repeatable);
+    setEntryModal('new');
+  }
   function exportCsv() {
     download(
       csv(filtered, data.clients),
@@ -212,11 +223,14 @@ export default function App() {
             </div>
             <button
               className="button primary"
-              onClick={() =>
-                page === 'clients'
-                  ? setClientModal('new')
-                  : setEntryModal('new')
-              }
+              onClick={() => {
+                if (page === 'clients') {
+                  setClientModal('new');
+                } else {
+                  setRepeatSource(null);
+                  setEntryModal('new');
+                }
+              }}
               disabled={!!storageError}
             >
               <Plus size={18} />
@@ -279,14 +293,26 @@ export default function App() {
                     </button>
                   )}
                 </div>
-                <button
-                  className="button secondary small"
-                  onClick={exportCsv}
-                  disabled={!filtered.length}
-                >
-                  <ArrowDownToLine size={16} />
-                  Export CSV
-                </button>
+                <div className="period-actions">
+                  {page === 'entries' && (
+                    <button
+                      className="button secondary small"
+                      onClick={repeatLast}
+                      disabled={!repeatable || !!storageError}
+                    >
+                      <Copy size={16} />
+                      Repeat last entry
+                    </button>
+                  )}
+                  <button
+                    className="button secondary small"
+                    onClick={exportCsv}
+                    disabled={!filtered.length}
+                  >
+                    <ArrowDownToLine size={16} />
+                    Export CSV
+                  </button>
+                </div>
               </div>
               <section className="stats" aria-label="Time summary">
                 <Stat
@@ -460,7 +486,10 @@ export default function App() {
                     <button
                       className="button primary"
                       disabled={!!storageError}
-                      onClick={() => setEntryModal('new')}
+                      onClick={() => {
+                        setRepeatSource(null);
+                        setEntryModal('new');
+                      }}
                     >
                       <Plus size={16} />
                       {data.entries.length
@@ -659,8 +688,14 @@ export default function App() {
       {entryModal && (
         <EntryForm
           entry={entryModal === 'new' ? undefined : entryModal}
+          template={
+            entryModal === 'new' ? (repeatSource ?? undefined) : undefined
+          }
           clients={data.clients}
-          onClose={() => setEntryModal(null)}
+          onClose={() => {
+            setEntryModal(null);
+            setRepeatSource(null);
+          }}
           onSave={(entry, client) => {
             save(
               saveEntry(
@@ -671,6 +706,7 @@ export default function App() {
               ),
             );
             setEntryModal(null);
+            setRepeatSource(null);
             setWeek(weekStart(entry.date));
             setRange('week');
             setClientFilter('all');

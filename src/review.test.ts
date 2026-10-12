@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Data, Entry } from './model';
 import {
+  mostRecentEntry,
   saveEntry,
   selectReview,
   undoEntries,
@@ -142,6 +143,38 @@ describe('undoEntries', () => {
         operation,
       ),
     ).toThrow('overwrite work');
+  });
+});
+
+describe('mostRecentEntry', () => {
+  it('returns undefined when there is nothing to repeat', () => {
+    expect(mostRecentEntry([])).toBeUndefined();
+  });
+
+  it('picks the latest entry for the current profile, ignoring others', () => {
+    const entries = [
+      base({ id: 'e1', date: '2026-09-29' }),
+      base({ id: 'e2', date: '2026-10-02' }),
+      base({ id: 'e3', date: '2026-10-04', employee: 'Sofia Reyes' }),
+    ];
+    expect(mostRecentEntry(entries)?.id).toBe('e2');
+  });
+
+  it('breaks same-day ties by the latest id', () => {
+    const entries = [
+      base({ id: 'e2', date: '2026-10-02' }),
+      base({ id: 'e9', date: '2026-10-02' }),
+    ];
+    expect(mostRecentEntry(entries)?.id).toBe('e9');
+  });
+
+  it('does not mutate the input order', () => {
+    const entries = [
+      base({ id: 'e1', date: '2026-09-29' }),
+      base({ id: 'e2', date: '2026-10-02' }),
+    ];
+    mostRecentEntry(entries);
+    expect(entries.map((e) => e.id)).toEqual(['e1', 'e2']);
   });
 });
 

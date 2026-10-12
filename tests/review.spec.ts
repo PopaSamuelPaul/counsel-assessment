@@ -131,6 +131,67 @@ test('undo keeps independent edits made on other entries', async ({ page }) => {
   );
 });
 
+async function loadPilotEntries(page: Page) {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Manage data' }).click();
+  await page.getByRole('button', { name: /Open pilot workspace/ }).click();
+  await page.getByRole('button', { name: 'Replace and restore' }).click();
+  await page.getByRole('button', { name: 'Time entries' }).click();
+}
+
+test('repeat last entry prefills the latest entry and saves a new copy', async ({
+  page,
+}) => {
+  await loadPilotEntries(page);
+
+  await page
+    .getByRole('button', { name: 'Repeat last entry', exact: true })
+    .click();
+  const dialog = page.getByRole('dialog');
+  await expect(
+    dialog.getByRole('heading', { name: 'Repeat last entry' }),
+  ).toBeVisible();
+  await expect(dialog.locator('select').first()).toHaveValue('oak');
+  await expect(dialog.getByRole('spinbutton', { name: 'Hours' })).toHaveValue(
+    '2',
+  );
+  await expect(dialog.getByRole('spinbutton', { name: 'Minutes' })).toHaveValue(
+    '0',
+  );
+  await expect(
+    dialog.getByRole('textbox', { name: /Description/ }),
+  ).toHaveValue('Client meeting preparation');
+  await expect(
+    dialog.getByRole('checkbox', { name: /Billable time/ }),
+  ).toBeChecked();
+
+  await dialog.getByRole('button', { name: 'Save entry' }).click();
+  await expect(page.getByText('Time entry saved.')).toBeVisible();
+
+  await page.getByRole('button', { name: 'All time' }).click();
+  await expect(
+    page.getByRole('row', { name: /Client meeting preparation/ }),
+  ).toHaveCount(2);
+});
+
+test('one click shows only the entries that still need review', async ({
+  page,
+}) => {
+  await loadPilot(page);
+  await expect(page.locator('.review-row')).toHaveCount(18);
+
+  await page.getByRole('button', { name: 'Needs review', exact: true }).click();
+
+  await expect(page.getByLabel('Review status')).toHaveValue('pending');
+  await expect(page.locator('.review-row')).toHaveCount(11);
+  await expect(
+    page.getByRole('button', { name: 'Showing needs review', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    page.locator('.review-row').filter({ hasText: 'Needs review' }),
+  ).toHaveCount(11);
+});
+
 test('changing the view clears the pending undo so it cannot touch hidden rows', async ({
   page,
 }) => {

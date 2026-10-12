@@ -413,6 +413,11 @@ h1 {
   gap: 18px;
   flex-wrap: wrap;
 }
+.period-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .segmented {
   display: flex;
   align-items: center;
@@ -1879,6 +1884,11 @@ tbody tr:hover {
   }
   .period-toolbar {
     align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .period-actions {
+    width: 100%;
+    justify-content: flex-end;
   }
   .period-left {
     gap: 11px;
@@ -1892,7 +1902,8 @@ tbody tr:hover {
     justify-content: flex-start;
     margin-left: -6px;
   }
-  .period-toolbar > .button {
+  .period-toolbar > .button,
+  .period-actions {
     margin-top: 1px;
   }
   .week-selector > span {
