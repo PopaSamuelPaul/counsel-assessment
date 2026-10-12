@@ -11,7 +11,7 @@ export type ReviewFilters = {
 export type EntryPatch = Partial<
   Pick<Entry, 'clientId' | 'billable' | 'reviewed'>
 >;
-export type UndoRecord = { before: Data; ids: string[] };
+export type UndoRecord = { before: Entry[]; after: Entry[] };
 
 export function selectWeek(entries: Entry[], week: string) {
   return entries.filter(
@@ -91,11 +91,27 @@ export function updateEntries(
     entries: data.entries.map((entry) => {
       if (!selected.has(entry.id)) return entry;
       const merged = { ...entry, ...patch };
+      const meaningful =
+        (patch.clientId !== undefined && patch.clientId !== entry.clientId) ||
+        (patch.billable !== undefined && patch.billable !== entry.billable);
+      if (meaningful && patch.reviewed === undefined) merged.reviewed = false;
       validateEntry(merged, data.clients);
       return merged;
     }),
   };
 }
-export function undoEntries(operation: UndoRecord): Data {
-  return operation.before;
+export function undoEntries(current: Data, operation: UndoRecord): Data {
+  const changed = operation.after.some((after) => {
+    const now = current.entries.find((e) => e.id === after.id);
+    return !now || JSON.stringify(now) !== JSON.stringify(after);
+  });
+  if (changed)
+    throw new Error(
+      'Undo would overwrite work done after the last review action, so it was not applied.',
+    );
+  const before = new Map(operation.before.map((e) => [e.id, e]));
+  return {
+    ...current,
+    entries: current.entries.map((entry) => before.get(entry.id) ?? entry),
+  };
 }

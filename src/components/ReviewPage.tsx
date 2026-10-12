@@ -20,12 +20,7 @@ import {
   totals,
   weekStart,
 } from '../model';
-import {
-  selectReview,
-  selectWeek,
-  undoEntries,
-  updateEntries,
-} from '../review';
+import { selectReview, undoEntries, updateEntries } from '../review';
 import type { EntryPatch, UndoRecord } from '../review';
 
 export function ReviewPage({
@@ -57,7 +52,6 @@ export function ReviewPage({
   const [operation, setOperation] = useState<UndoRecord | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const weekEntries = selectWeek(data.entries, week);
   const visible = selectReview(data.entries, data.clients, {
     week,
     clientId,
@@ -65,8 +59,8 @@ export function ReviewPage({
     status,
     search,
   });
-  const summaryEntries = weekEntries;
-  const exportEntries = weekEntries;
+  const summaryEntries = visible;
+  const exportEntries = visible;
   const summary = totals(summaryEntries);
   const selectedIds = selected.filter((id) =>
     data.entries.some((e) => e.id === id),
@@ -80,7 +74,10 @@ export function ReviewPage({
     try {
       const next = updateEntries(data, ids, patch);
       save(next);
-      setOperation({ before: data, ids });
+      setOperation({
+        before: data.entries.filter((e) => ids.includes(e.id)),
+        after: next.entries.filter((e) => ids.includes(e.id)),
+      });
       setSelected([]);
       setMessage(
         `Updated ${ids.length} ${ids.length === 1 ? 'entry' : 'entries'}.`,
@@ -284,7 +281,7 @@ export function ReviewPage({
               disabled={readOnly}
               onClick={() => {
                 try {
-                  save(undoEntries(operation));
+                  save(undoEntries(data, operation));
                   setOperation(null);
                   setError('');
                   setMessage('Last review action undone.');
