@@ -2,7 +2,7 @@
 
 ## Changed
 
-I prioritized the three customer reports (data trust), one focused workflow improvement, and two small optional requests.
+I prioritized the three customer reports (data trust), one focused workflow improvement, and three small optional requests.
 
 **Focused improvement (which records will the next action touch?).** Before: selection and the pending undo persisted when the week or a filter changed, so "Apply to N selected" or "Undo last action" could silently act on rows no longer on screen. After: any week/filter change clears the selection and the undo, and says so ("View changed — selection and undo were cleared"). Action scope now always matches the visible rows. E.g. select rows under Meridian, switch to Northstar — previously the hidden Meridian rows were still targeted.
 
@@ -10,6 +10,7 @@ Optional requests (delivered, deliberately small):
 
 - **Repeat last entry** (Alex): one button on Time entries opens the entry form prefilled from the profile's most recent entry (client, duration, description, billability), dated today, so repeat work is one review away. Pure helper `mostRecentEntry` picks the entry; the form is prefilled, not auto-saved.
 - **Needs-review shortcut** (Sofia): a "Needs review" toggle on Weekly review that flips the status filter in one click, matching what still needs checking.
+- **Dark theme**: a topbar toggle, following the system preference on first load and persisted per browser. Done as an additive `[data-theme='dark']` override block with tokens, so the existing light rules are never touched and light mode is provably unchanged. No flash of wrong theme on load.
 
 Correctness fixes:
 
@@ -20,14 +21,14 @@ Correctness fixes:
 
 ## Verified
 
-- `npm test`: 43 pass (`src/review.test.ts`, `src/components/ReviewPage.test.tsx`).
-- `npm run test:e2e`: 26 pass on desktop + mobile Chromium, including reproductions of all three reports, selection/undo clearing, undo conflict, repeat-last-entry prefill, and the needs-review shortcut; axe accessibility checks pass.
+- `npm test`: 49 pass (`src/review.test.ts`, `src/components/ReviewPage.test.tsx`, `src/theme.test.ts`).
+- `npm run test:e2e`: 28 pass on desktop + mobile Chromium, including reproductions of all three reports, selection/undo clearing, undo conflict, repeat-last-entry prefill, the needs-review shortcut, and dark mode. Axe runs in light and dark across all pages and dialogs; a computed-style audit found no un-themed surfaces.
 - `npm run build` + Prettier: pass.
 - Independently reproduced from a fresh clone of the submitted commit (`npm ci`, `npm run check`, `npm run test:e2e`).
 
 ## Remaining
 
-Deferred: dark theme. The CSS uses hardcoded colours across ~286 selectors with only 5 variables, so a correct dark theme is a sizeable refactor, not a quick add. Also Chromium-only browser coverage; no real Safari/native mobile run.
+Chromium-only browser coverage; no real Safari/native mobile run. The dark theme covers app surfaces, text and controls, but I did not hand-tune every chart shade.
 
 ## Release recommendation
 
