@@ -78,3 +78,71 @@ test('a client correction returns a reviewed entry to needs review', async ({
       .getByRole('button', { name: /Review Shareholder agreement review/ }),
   ).toBeVisible();
 });
+
+async function moveToNorthstar(page: Page) {
+  await page
+    .locator('[data-entry-id="entry-001"]')
+    .getByLabel('Select Shareholder agreement review')
+    .check();
+  await page.getByLabel('Bulk action').selectOption('client');
+  await page.getByLabel('Destination client').selectOption('northstar');
+  await page.getByRole('button', { name: /Apply to 1 selected/ }).click();
+}
+
+async function editDescription(page: Page, id: string, description: string) {
+  await page
+    .locator(`[data-entry-id="${id}"]`)
+    .getByRole('button', { name: /Edit review entry/ })
+    .click();
+  await page.getByLabel('Description').fill(description);
+  await page.getByRole('button', { name: 'Save changes' }).click();
+}
+
+test('undo declines rather than overwriting a newer edit on an affected entry', async ({
+  page,
+}) => {
+  await loadPilot(page);
+  await moveToNorthstar(page);
+  await editDescription(
+    page,
+    'entry-001',
+    'Shareholder agreement review (revised)',
+  );
+
+  await page.getByRole('button', { name: /Undo last action/ }).click();
+  await expect(page.getByRole('alert')).toContainText('was not applied');
+  await expect(page.locator('[data-entry-id="entry-001"]')).toContainText(
+    '(revised)',
+  );
+});
+
+test('undo keeps independent edits made on other entries', async ({ page }) => {
+  await loadPilot(page);
+  await moveToNorthstar(page);
+  await editDescription(page, 'entry-002', 'Weekly team planning (revised)');
+
+  await page.getByRole('button', { name: /Undo last action/ }).click();
+  await expect(page.getByText('Last review action undone.')).toBeVisible();
+  await expect(page.locator('[data-entry-id="entry-001"]')).toContainText(
+    'Meridian Holdings',
+  );
+  await expect(page.locator('[data-entry-id="entry-002"]')).toContainText(
+    '(revised)',
+  );
+});
+
+test('changing the view clears the pending undo so it cannot touch hidden rows', async ({
+  page,
+}) => {
+  await loadPilot(page);
+  await moveToNorthstar(page);
+  await expect(
+    page.getByRole('button', { name: /Undo last action/ }),
+  ).toBeVisible();
+
+  await page.getByLabel('Review status').selectOption('reviewed');
+  await expect(
+    page.getByRole('button', { name: /Undo last action/ }),
+  ).toHaveCount(0);
+  await expect(page.getByText(/can no longer be undone/)).toBeVisible();
+});

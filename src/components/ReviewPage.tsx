@@ -68,10 +68,16 @@ export function ReviewPage({
   const employees = [...new Set(data.entries.map((e) => e.employee))].sort();
   function changeView(update: () => void) {
     update();
-    if (selected.length) {
-      setSelected([]);
+    const hadSelection = selected.length > 0;
+    const hadUndo = operation !== null;
+    if (hadSelection) setSelected([]);
+    if (hadUndo) setOperation(null);
+    if (hadSelection && hadUndo)
+      setMessage('View changed — selection and undo were cleared.');
+    else if (hadSelection)
       setMessage('View changed — your selection was cleared.');
-    }
+    else if (hadUndo)
+      setMessage('View changed — the last action can no longer be undone.');
   }
   function apply(ids: string[], patch: EntryPatch) {
     setError('');

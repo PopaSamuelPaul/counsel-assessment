@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Data, Entry } from './model';
 import {
+  saveEntry,
   selectReview,
   undoEntries,
   updateEntries,
@@ -68,6 +69,26 @@ describe('updateEntries', () => {
     expect(() => updateEntries(dataOf(base()), ['missing'], {})).toThrow(
       'no longer exists',
     );
+  });
+});
+
+describe('entry edits', () => {
+  it('preserves billability and reopens review after a description edit', () => {
+    const original = base({ reviewed: true, billable: false });
+    const data = dataOf(original);
+    const edited = { ...original, description: 'Updated wording' };
+    const saved = saveEntry(data, edited, undefined, original);
+    expect(saved.entries[0]).toMatchObject({
+      billable: false,
+      reviewed: false,
+    });
+  });
+
+  it('keeps review status when an edit makes no change', () => {
+    const original = base({ reviewed: true, billable: false });
+    const data = dataOf(original);
+    const saved = saveEntry(data, { ...original }, undefined, original);
+    expect(saved.entries[0].reviewed).toBe(true);
   });
 });
 
