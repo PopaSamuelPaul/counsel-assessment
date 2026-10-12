@@ -2,29 +2,33 @@
 
 ## Changed
 
-I prioritized the three customer reports (data trust) over the optional requests. Four root causes:
+I prioritized the three customer reports (data trust) and one focused workflow improvement for Sofia.
 
-- Editing an entry reset **Billable** to true; the edit form now seeds from the entry (`EntryForm.tsx`). Fixes Alex's correction.
-- Weekly review totals and **Export view** were computed from the whole week, ignoring the active client/employee/status/search filters (`ReviewPage.tsx`). They now follow the visible rows; selection still scopes actions only, never export. This is the focused workflow improvement: Sofia can trust the numbers above the list and the file she exports.
-- Bulk "Move to client" / "Mark billable" left entries marked Reviewed although content changed (`review.ts`). A meaningful change now returns the entry to Needs review; unchanged values do not.
-- Undo restored a whole-dataset snapshot, silently discarding newer work. It now reverts only the affected entries and declines with an explanation if those entries changed.
+**Focused improvement (which records will the next action touch?).** Before: selection persisted when the week or a filter changed, so “Apply to N selected” could silently act on rows no longer on screen. After: changing the week or any filter clears the selection and shows “View changed — your selection was cleared”, so action scope always matches what is visible. E.g. select rows under Meridian, switch to Northstar — previously the hidden Meridian rows were still targeted; now the count resets to zero and the apply button disables.
+
+Correctness fixes:
+
+- Editing an entry forced **Billable** on; the edit form now seeds from the entry.
+- Weekly review totals and **Export view** used the whole week, ignoring filters; both now follow the visible rows. Selection never changes export scope.
+- Bulk client/billability changes left entries marked Reviewed; a meaningful change now returns them to Needs review.
+- Undo restored a whole-dataset snapshot, discarding newer work; it now reverts only the affected entries and declines with an explanation if those changed.
 
 ## Verified
 
-- `npm test`: 36 pass, including new regression tests (`src/review.test.ts`, `src/components/ReviewPage.test.tsx`): filtered total 22h30m → 6h30m for Meridian, export contains only the 5 Meridian rows, a client correction reopens review, and undo preserves independent edits while declining on conflict.
-- `npm run build`: TypeScript + production build pass; Prettier clean.
-- Not run locally: Playwright e2e/a11y (browser download aborted). CI covers it.
+- `npm test`: 37 pass (`src/review.test.ts`, `src/components/ReviewPage.test.tsx`).
+- `npm run test:e2e`: 16 pass on desktop + mobile Chromium, including a new `tests/review.spec.ts` reproducing all three reports and the selection-clear behaviour; axe accessibility checks pass.
+- `npm run build` + Prettier: pass.
 
 ## Remaining
 
-Optional requests deferred: dark theme, repeat-yesterday, a "needs checking" shortcut. A manual browser pass of the pilot week is still advisable.
+Deferred optional requests: dark theme, repeat-yesterday, a “needs checking” shortcut. Browser coverage is Chromium only (no real Safari/native mobile).
 
 ## Release recommendation
 
-Yes for the pilot: these fixes remove the trust-eroding number bugs. Limitations: e2e unverified locally; optional requests outstanding.
+Yes for the pilot: these fixes remove the trust-eroding number and action-scope bugs. Residual risk is single-browser coverage and no manual cross-team walkthrough.
 
 ## AI use
 
-An AI coding agent helped trace causes and draft tests. One check: its first undo test compared full datasets and failed; I corrected the `UndoRecord` semantics to affected-entry-only and re-ran.
+An AI agent helped trace causes and draft tests. One check: its first undo test compared full datasets and failed; I corrected the `UndoRecord` semantics to affected-entry-only and re-ran. I also rejected its “preserve selection” proposal for the simpler clear-and-explain after re-reading the scope expectation.
 
 Final commit SHA: supplied to the interviewer after the final push.

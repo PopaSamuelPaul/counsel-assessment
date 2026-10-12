@@ -68,6 +68,10 @@ export function ReviewPage({
   const employees = [...new Set(data.entries.map((e) => e.employee))].sort();
   function changeView(update: () => void) {
     update();
+    if (selected.length) {
+      setSelected([]);
+      setMessage('View changed — your selection was cleared.');
+    }
   }
   function apply(ids: string[], patch: EntryPatch) {
     setError('');

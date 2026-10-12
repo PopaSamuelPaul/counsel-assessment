@@ -101,6 +101,24 @@ describe('ReviewPage scope', () => {
       }),
     ).toBeInTheDocument();
   });
+
+  it('clears the selection when the view changes so actions cannot touch hidden rows', () => {
+    render(<Harness initial={data} />);
+    const first = document.querySelector(
+      '.review-row input[type="checkbox"]',
+    ) as HTMLInputElement;
+    fireEvent.click(first);
+    expect(screen.getByText('1 selected')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Review client'), {
+      target: { value: 'meridian' },
+    });
+    expect(screen.getByText('0 selected')).toBeInTheDocument();
+    expect(screen.getByText(/selection was cleared/)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Apply to 0 selected/ }),
+    ).toBeDisabled();
+  });
 });
 
 beforeEach(() => {
